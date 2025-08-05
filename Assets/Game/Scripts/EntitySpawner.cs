@@ -1,14 +1,14 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class EntitySpawner : MonoBehaviour
 {
     [SerializeField] private EntityMovement _entityPrefab;
+    [SerializeField] private int _countEntity;
     private Transform[] _spawnPoints;
     private float _spawnInterval = 2f;
+    
     private void Start()
     {
         Transform[] allChildren = transform.GetComponentsInChildren<Transform>(false);
@@ -19,12 +19,13 @@ public class EntitySpawner : MonoBehaviour
             _spawnPoints[i - 1] = allChildren[i];
         }
 
-        StartCoroutine(SpawnEnemies());
+        StartCoroutine(SpawnEnemies(_countEntity));
     }
 
-    private IEnumerator SpawnEnemies()
+    private IEnumerator SpawnEnemies(int maxCount)
     {
-        while (true) // true потому что условия нет никакого, нужно бесконечно
+        int count = 0;
+        while (count < maxCount)
         {
             int randomIndex = Random.Range(0, _spawnPoints.Length);
             Transform spawnPoint = _spawnPoints[randomIndex];
@@ -34,6 +35,7 @@ public class EntitySpawner : MonoBehaviour
             var direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0).normalized;
 
             newEntity.SetDirection(direction);
+            count++;
             yield return new WaitForSeconds(_spawnInterval);
         }
     }
